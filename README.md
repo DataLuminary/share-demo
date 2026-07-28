@@ -15,7 +15,7 @@ pnpm install
 pnpm dev
 ```
 
-默认端口 `3010`。页面顶部可覆盖 uid / token / appOrigin / proxy，并写入 localStorage；「恢复默认」回到环境变量。
+默认端口 `3010`。布局：左侧选择嵌入方式（iframe / JS SDK / Micro App / Wujie）；右侧上方为嵌入配置（表单 + 代码），下方为全高度嵌入预览。支持中英文切换（右上角，写入 localStorage）。可覆盖 uid / token / appOrigin / proxy 并写入 localStorage；「恢复默认」回到环境变量。
 
 ## 环境变量
 

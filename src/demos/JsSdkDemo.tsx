@@ -2,6 +2,7 @@ import { Empty } from "antd";
 import { useEffect, useRef, useState } from "react";
 import type { DemoConfig } from "@/config/demoConfig";
 import { isConfigReady } from "@/config/demoConfig";
+import { useI18n } from "@/i18n";
 import { loadScript } from "./loadScript";
 
 interface Props {
@@ -27,6 +28,7 @@ declare global {
 }
 
 const JsSdkDemo = ({ config }: Props) => {
+  const { t } = useI18n();
   const hostRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,7 +48,7 @@ const JsSdkDemo = ({ config }: Props) => {
           dashboard: config.shareUid,
           appOrigin: config.appOrigin,
           proxy: config.proxy.trim() || undefined,
-          height: "640px",
+          height: "100%",
         });
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
@@ -61,12 +63,16 @@ const JsSdkDemo = ({ config }: Props) => {
   }, [config]);
 
   if (!isConfigReady(config)) {
-    return <Empty description="请先配置 shareUid 与 token" />;
+    return (
+      <div className="sd-empty-wrap">
+        <Empty description={t.emptyConfig} />
+      </div>
+    );
   }
 
   return (
-    <div>
-      {error ? <p className="sd-muted">加载失败：{error}</p> : null}
+    <div style={{ height: "100%", position: "relative" }}>
+      {error ? <p className="sd-error">{t.loadFailed(error)}</p> : null}
       <div ref={hostRef} className="sd-demo-host sd-demo-frame" />
     </div>
   );

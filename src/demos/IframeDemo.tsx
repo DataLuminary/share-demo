@@ -1,14 +1,20 @@
 import { Empty } from "antd";
 import type { DemoConfig } from "@/config/demoConfig";
 import { buildEmbedUrl, isConfigReady } from "@/config/demoConfig";
+import { useI18n } from "@/i18n";
 
 interface Props {
   config: DemoConfig;
 }
 
 const IframeDemo = ({ config }: Props) => {
+  const { t } = useI18n();
   if (!isConfigReady(config)) {
-    return <Empty description="请先配置 shareUid 与 token" />;
+    return (
+      <div className="sd-empty-wrap">
+        <Empty description={t.emptyConfig} />
+      </div>
+    );
   }
   return (
     <iframe
