@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="DataLuminary mark">
+  <defs>
+    <linearGradient id="dli-line" x1="120" y1="360" x2="356" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1B5BD6"/>
+      <stop offset="100%" stop-color="#3A84FF"/>
+    </linearGradient>
+    <linearGradient id="dli-spark" x1="356" y1="124" x2="356" y2="272" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3A84FF"/>
+      <stop offset="100%" stop-color="#1B5BD6"/>
+    </linearGradient>
+    <linearGradient id="dli-area" x1="256" y1="190" x2="256" y2="372" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#3A84FF" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#3A84FF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <path d="M120 360 L196 318 L268 342 L356 200 L356 360 Z" fill="url(#dli-area)"/>
+  <path d="M120 360 L196 318 L268 342 L356 200" stroke="url(#dli-line)" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="#3A84FF">
+    <circle cx="120" cy="360" r="11"/>
+    <circle cx="196" cy="318" r="11"/>
+    <circle cx="268" cy="342" r="11"/>
+  </g>
+
+  <path d="M356 124 Q356 198 426 198 Q356 198 356 272 Q356 198 286 198 Q356 198 356 124 Z" fill="url(#dli-spark)"/>
+  <path d="M168 150 Q168 178 196 178 Q168 178 168 206 Q168 178 140 178 Q168 178 168 150 Z" fill="#7FB2FF"/>
+</svg>

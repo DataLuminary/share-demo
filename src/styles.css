@@ -1,0 +1,130 @@
+:root {
+  --brand-blue: #3a84ff;
+  --brand-blue-deep: #1b5bd6;
+  --brand-ink: #0a1020;
+  --brand-muted: #63656e;
+  --brand-border: #dce0e6;
+  --brand-bg: #f5f7fb;
+  --brand-white: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family:
+    "Segoe UI",
+    "PingFang SC",
+    "Microsoft YaHei",
+    system-ui,
+    sans-serif;
+  color: var(--brand-ink);
+  background: linear-gradient(160deg, #f5f7fb 0%, #e8eef8 45%, #f8fafc 100%);
+}
+
+a {
+  color: var(--brand-blue);
+}
+
+.sd-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+.sd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.sd-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.sd-brand img {
+  width: 36px;
+  height: 36px;
+}
+
+.sd-brand-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sd-brand-title strong {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.sd-brand-title span {
+  font-size: 12px;
+  color: var(--brand-muted);
+}
+
+.sd-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sd-card {
+  background: var(--brand-white);
+  border: 1px solid var(--brand-border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.sd-demo-frame {
+  width: 100%;
+  min-height: 640px;
+  border: 1px solid var(--brand-border);
+  border-radius: 4px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.sd-demo-host {
+  width: 100%;
+  min-height: 640px;
+}
+
+.sd-code pre {
+  margin: 0;
+  padding: 12px 14px;
+  background: #0a1020;
+  color: #e8eef8;
+  border-radius: 6px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.55;
+  max-height: 280px;
+}
+
+.sd-code-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.sd-muted {
+  color: var(--brand-muted);
+  font-size: 13px;
+}
