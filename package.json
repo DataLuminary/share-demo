@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/DataLuminary/share-demo.git"
   },
-  "homepage": "https://demo.dataluminary.dev",
+  "homepage": "https://share.dataluminary.dev",
   "scripts": {
     "dev": "rsbuild dev",
     "build": "rsbuild build",

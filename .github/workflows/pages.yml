@@ -1,7 +1,7 @@
-# Deploy share-demo to GitHub Pages (demo.dataluminary.dev)
+# Deploy share-demo to GitHub Pages (share.dataluminary.dev)
 #
 # Repo: https://github.com/DataLuminary/share-demo
-# DNS: CNAME demo.dataluminary.dev -> <org-or-user>.github.io
+# DNS: CNAME share.dataluminary.dev -> <org-or-user>.github.io
 # Settings -> Pages -> Custom domain + Enforce HTTPS
 #
 # Configure repository Variables / Secrets for PUBLIC_SHARE_* defaults.
@@ -53,7 +53,7 @@ jobs:
           PUBLIC_SDK_CDN_URL: ${{ vars.PUBLIC_SDK_CDN_URL }}
 
       - name: Ensure CNAME
-        run: echo 'demo.dataluminary.dev' > dist/CNAME
+        run: echo 'share.dataluminary.dev' > dist/CNAME
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
