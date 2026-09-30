@@ -4,7 +4,7 @@
 
 - 在线演示：https://share.dataluminary.dev
 - 源码仓库：https://github.com/DataLuminary/share-demo
-- 产品文档：https://docs.dataluminary.dev/share/embed（或 ProductWhitePaper `docs/share/embed.md`）
+- 产品文档：https://docs.dataluminary.dev/share/embed（或 docs `docs/share/embed.md`）
 
 ## 本地运行
 
