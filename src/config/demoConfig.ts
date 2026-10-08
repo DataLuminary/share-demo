@@ -10,16 +10,26 @@ export interface DemoConfig {
 
 const STORAGE_KEY = "dataluminary.share-demo.config";
 
-const DEFAULT_SDK_CDN =
+/** Gallery space public share seeded by DataTalk demo (`seed-embed-share`). */
+export const DEMO_SHARE_UID = "00000000-0000-4000-8000-00000000e101";
+export const DEMO_SHARE_TOKEN = "dl-demo-public-embed-b001-v1";
+
+const BROKEN_SDK_CDN =
   "https://cdn.jsdelivr.net/gh/DataLuminary/DataView@sdk-latest/packages/sdk/dist/luminary.min.js";
 
+export function defaultSdkUrl(appOrigin: string): string {
+  return `${appOrigin.replace(/\/$/, "")}/sdk/luminary.min.js`;
+}
+
 function envDefaults(): DemoConfig {
+  const appOrigin = (process.env.PUBLIC_APP_ORIGIN || "http://localhost:3013").replace(/\/$/, "");
+  const sdkFromEnv = (process.env.PUBLIC_SDK_CDN_URL || "").trim();
   return {
-    appOrigin: (process.env.PUBLIC_APP_ORIGIN || "https://app.dataluminary.dev").replace(/\/$/, ""),
-    shareUid: process.env.PUBLIC_SHARE_UID || "",
-    token: process.env.PUBLIC_SHARE_TOKEN || "",
+    appOrigin,
+    shareUid: (process.env.PUBLIC_SHARE_UID || "").trim() || DEMO_SHARE_UID,
+    token: (process.env.PUBLIC_SHARE_TOKEN || "").trim() || DEMO_SHARE_TOKEN,
     proxy: process.env.PUBLIC_PROXY || "",
-    sdkUrl: process.env.PUBLIC_SDK_CDN_URL || DEFAULT_SDK_CDN,
+    sdkUrl: sdkFromEnv && sdkFromEnv !== BROKEN_SDK_CDN ? sdkFromEnv : defaultSdkUrl(appOrigin),
   };
 }
 
@@ -40,7 +50,10 @@ export function loadDemoConfig(): DemoConfig {
       shareUid: String(o.shareUid ?? defaults.shareUid),
       token: String(o.token ?? defaults.token),
       proxy: String(o.proxy ?? defaults.proxy),
-      sdkUrl: String(o.sdkUrl ?? defaults.sdkUrl) || DEFAULT_SDK_CDN,
+      sdkUrl: (() => {
+        const saved = String(o.sdkUrl ?? defaults.sdkUrl);
+        return !saved || saved === BROKEN_SDK_CDN ? defaults.sdkUrl : saved;
+      })(),
     };
   } catch {
     return defaults;
@@ -92,26 +105,38 @@ ${proxyLine}
 </script>`;
     }
     case "micro-app":
-      return `<!-- requires @micro-zoe/micro-app -->
-<script src="https://cdn.jsdelivr.net/npm/@micro-zoe/micro-app/lib/index.umd.js"></script>
-<script>microApp.start()</script>
+      return `<!-- requires @micro-zoe/micro-app. Hash routes must stay on a real iframe. -->
+<script src="/vendor/micro-app.js"></script>
+<script>
+  const micro = window.microApp.start ? window.microApp : window.microApp.default;
+  micro.start({ iframe: true, "disable-memory-router": true });
+</script>
 <micro-app
   name="luminary-${config.shareUid.slice(0, 8)}"
   url="${url}"
   iframe
+  disable-memory-router
   style="width:100%;min-height:640px;"
-></micro-app>`;
+></micro-app>
+<script>
+  const frame = document.querySelector('iframe[powered-by="micro-app"]');
+  if (frame) frame.src = "${url}";
+</script>`;
     case "wujie":
-      return `<!-- requires wujie -->
-<script src="https://cdn.jsdelivr.net/npm/wujie@1/lib/index.umd.js"></script>
+      return `<!-- requires wujie. Hash routes must stay on a real iframe. -->
+<script src="/vendor/wujie.js"></script>
 <div id="luminary-wujie" style="width:100%;min-height:640px;"></div>
 <script>
-  window.Wujie.startApp({
+  const embedUrl = "${url}";
+  window.wujie.startApp({
     name: "luminary-${config.shareUid.slice(0, 8)}",
-    url: "${url}",
+    url: embedUrl,
     el: document.querySelector("#luminary-wujie"),
-    alive: true,
+    alive: false,
+    degrade: true,
   });
+  const frame = document.querySelector("#luminary-wujie iframe");
+  if (frame) frame.src = embedUrl;
 </script>`;
     default:
       return `<iframe

@@ -15,17 +15,18 @@ interface WujieApi {
     url: string;
     el: HTMLElement | null;
     alive?: boolean;
+    degrade?: boolean;
   }) => void;
   destroyApp?: (name: string) => void;
 }
 
 declare global {
   interface Window {
-    Wujie?: WujieApi;
+    wujie?: WujieApi;
   }
 }
 
-const WUJIE_CDN = "https://cdn.jsdelivr.net/npm/wujie@1/lib/index.umd.js";
+const WUJIE_CDN = "/vendor/wujie.js";
 
 const WujieDemo = ({ config }: Props) => {
   const { t } = useI18n();
@@ -40,16 +41,23 @@ const WujieDemo = ({ config }: Props) => {
     void (async () => {
       try {
         setError(null);
-        await loadScript(WUJIE_CDN, "Wujie");
-        if (cancelled || !hostRef.current || !window.Wujie) return;
-        window.Wujie.destroyApp?.(appName);
+        await loadScript(WUJIE_CDN, "wujie");
+        if (cancelled || !hostRef.current || !window.wujie) return;
+        window.wujie.destroyApp?.(appName);
         hostRef.current.innerHTML = "";
-        window.Wujie.startApp({
+        const embedUrl = buildEmbedUrl(config);
+        window.wujie.startApp({
           name: appName,
-          url: buildEmbedUrl(config),
+          url: embedUrl,
           el: hostRef.current,
-          alive: true,
+          alive: false,
+          degrade: true,
         });
+        window.setTimeout(() => {
+          if (cancelled || !hostRef.current) return;
+          const frame = hostRef.current.querySelector("iframe");
+          if (frame) frame.src = embedUrl;
+        }, 100);
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
       }
@@ -57,7 +65,7 @@ const WujieDemo = ({ config }: Props) => {
 
     return () => {
       cancelled = true;
-      window.Wujie?.destroyApp?.(appName);
+      window.wujie?.destroyApp?.(appName);
       if (hostRef.current) hostRef.current.innerHTML = "";
     };
   }, [config, appName]);

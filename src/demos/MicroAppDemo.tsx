@@ -9,14 +9,24 @@ interface Props {
   config: DemoConfig;
 }
 
+interface MicroAppApi {
+  start: () => void;
+}
+
 declare global {
   interface Window {
-    microApp?: { start: () => void };
+    microApp?: MicroAppApi & { default?: MicroAppApi };
   }
 }
 
-const MICRO_APP_CDN =
-  "https://cdn.jsdelivr.net/npm/@micro-zoe/micro-app/lib/index.umd.js";
+function resolveMicroApp(): MicroAppApi | undefined {
+  const raw = window.microApp;
+  if (raw && typeof raw.start === "function") return raw;
+  if (raw?.default && typeof raw.default.start === "function") return raw.default;
+  return undefined;
+}
+
+const MICRO_APP_CDN = "/vendor/micro-app.js";
 
 const MicroAppDemo = ({ config }: Props) => {
   const { t } = useI18n();
@@ -33,17 +43,33 @@ const MicroAppDemo = ({ config }: Props) => {
         setError(null);
         await loadScript(MICRO_APP_CDN, "microApp");
         if (cancelled || !hostRef.current) return;
-        window.microApp?.start();
+        const micro = resolveMicroApp() as
+          | { start: (options?: Record<string, unknown>) => void }
+          | undefined;
+        micro?.start({ iframe: true, "disable-memory-router": true });
         hostRef.current.innerHTML = "";
+        const embedUrl = buildEmbedUrl(config);
         const app = document.createElement("micro-app");
         app.setAttribute("name", elName);
-        app.setAttribute("url", buildEmbedUrl(config));
-        app.setAttribute("iframe", "");
+        app.setAttribute("url", embedUrl);
+        app.setAttribute("iframe", "true");
+        app.setAttribute("disable-memory-router", "true");
         app.style.width = "100%";
         app.style.height = "100%";
         app.style.minHeight = "100%";
         app.style.display = "block";
         hostRef.current.appendChild(app);
+        window.setTimeout(() => {
+          if (cancelled || !hostRef.current) return;
+          const frame = document.querySelector<HTMLIFrameElement>('iframe[powered-by="micro-app"]');
+          if (!frame) return;
+          frame.src = embedUrl;
+          frame.style.display = "block";
+          frame.style.width = "100%";
+          frame.style.height = "100%";
+          frame.style.border = "0";
+          hostRef.current.appendChild(frame);
+        }, 300);
       } catch (e) {
         if (!cancelled) setError(e instanceof Error ? e.message : String(e));
       }
