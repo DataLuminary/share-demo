@@ -46,11 +46,9 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          PUBLIC_APP_ORIGIN: ${{ vars.PUBLIC_APP_ORIGIN }}
-          PUBLIC_SHARE_UID: ${{ secrets.PUBLIC_SHARE_UID }}
-          PUBLIC_SHARE_TOKEN: ${{ secrets.PUBLIC_SHARE_TOKEN }}
-          PUBLIC_PROXY: ${{ vars.PUBLIC_PROXY }}
-          PUBLIC_SDK_CDN_URL: ${{ vars.PUBLIC_SDK_CDN_URL }}
+          # Public embed demo always targets the Demo deployment, not the product app.
+          # Share uid/token are the seeded gallery constants in src/config/demoConfig.ts.
+          PUBLIC_APP_ORIGIN: https://demo.dataluminary.dev
 
       - name: Ensure CNAME
         run: echo 'share.dataluminary.dev' > dist/CNAME

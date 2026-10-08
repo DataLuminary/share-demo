@@ -37,6 +37,8 @@ export function getEnvDefaults(): DemoConfig {
   return envDefaults();
 }
 
+const RETIRED_APP_SHARE_UID = "01a11a3e-043f-7112-8622-51a4d4b00e7c";
+
 export function loadDemoConfig(): DemoConfig {
   const defaults = envDefaults();
   try {
@@ -45,9 +47,14 @@ export function loadDemoConfig(): DemoConfig {
     const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return defaults;
     const o = parsed as Record<string, unknown>;
+    const shareUid = String(o.shareUid ?? defaults.shareUid);
+    if (shareUid === RETIRED_APP_SHARE_UID) {
+      localStorage.removeItem(STORAGE_KEY);
+      return defaults;
+    }
     return {
       appOrigin: String(o.appOrigin ?? defaults.appOrigin).replace(/\/$/, ""),
-      shareUid: String(o.shareUid ?? defaults.shareUid),
+      shareUid,
       token: String(o.token ?? defaults.token),
       proxy: String(o.proxy ?? defaults.proxy),
       sdkUrl: (() => {
