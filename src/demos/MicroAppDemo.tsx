@@ -45,7 +45,8 @@ const MicroAppDemo = ({ config }: Props) => {
         app.setAttribute("router-mode", "pure");
         app.style.display = "block";
         app.style.width = "100%";
-        app.style.minHeight = "640px";
+        app.style.height = "100%";
+        app.style.minHeight = "0";
         host.appendChild(app);
         const embedUrl = buildEmbedUrl(config);
         const pin = () => {
@@ -56,9 +57,11 @@ const MicroAppDemo = ({ config }: Props) => {
           const frame = frames[0];
           if (!frame) return;
           if (!frame.src.includes("/embed/share/")) frame.src = embedUrl;
+          frame.style.position = "absolute";
+          frame.style.inset = "0";
           frame.style.display = "block";
           frame.style.width = "100%";
-          frame.style.height = "640px";
+          frame.style.height = "100%";
           frame.style.border = "0";
           if (frame.parentElement !== host) host.appendChild(frame);
           for (const extra of frames.slice(1)) extra.remove();
