@@ -112,39 +112,12 @@ ${proxyLine}
 </script>`;
     }
     case "micro-app":
-      return `<!-- requires @micro-zoe/micro-app. Hash routes must stay on a real iframe. -->
-<script src="/vendor/micro-app.js"></script>
-<script>
-  const micro = window.microApp.start ? window.microApp : window.microApp.default;
-  micro.start({ iframe: true, "disable-memory-router": true });
-</script>
-<micro-app
-  name="luminary-${config.shareUid.slice(0, 8)}"
-  url="${url}"
-  iframe
-  disable-memory-router
-  style="width:100%;min-height:640px;"
-></micro-app>
-<script>
-  const frame = document.querySelector('iframe[powered-by="micro-app"]');
-  if (frame) frame.src = "${url}";
-</script>`;
     case "wujie":
-      return `<!-- requires wujie. Hash routes must stay on a real iframe. -->
-<script src="/vendor/wujie.js"></script>
-<div id="luminary-wujie" style="width:100%;min-height:640px;"></div>
-<script>
-  const embedUrl = "${url}";
-  window.wujie.startApp({
-    name: "luminary-${config.shareUid.slice(0, 8)}",
-    url: embedUrl,
-    el: document.querySelector("#luminary-wujie"),
-    alive: false,
-    degrade: true,
-  });
-  const frame = document.querySelector("#luminary-wujie iframe");
-  if (frame) frame.src = embedUrl;
-</script>`;
+      return `<iframe
+  src="${url}"
+  style="width:100%;height:100%;min-height:640px;border:1px solid #dce0e6;"
+  allow="fullscreen"
+></iframe>`;
     default:
       return `<iframe
   src="${url}"
