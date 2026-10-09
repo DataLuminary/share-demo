@@ -6,7 +6,7 @@ import {
 import { Button, ConfigProvider, Segmented, message } from "antd";
 import enUS from "antd/locale/en_US";
 import zhCN from "antd/locale/zh_CN";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router";
 import ConfigBar from "@/components/ConfigBar";
 import {
@@ -16,6 +16,7 @@ import {
   getEnvDefaults,
   isConfigReady,
   loadDemoConfig,
+  resolveConfigForMode,
   saveDemoConfig,
 } from "@/config/demoConfig";
 import CodePanel from "@/demos/CodePanel";
@@ -57,11 +58,15 @@ const App = () => {
   const modeParam = params.mode ?? "iframe";
   const mode: EmbedMode = MODE_SET.has(modeParam) ? (modeParam as EmbedMode) : "iframe";
 
-  const [config, setConfig] = useState<DemoConfig>(() => loadDemoConfig());
+  const [config, setConfig] = useState<DemoConfig>(() => resolveConfigForMode(loadDemoConfig(), mode));
   const [demoKey, setDemoKey] = useState(0);
   const [configCollapsed, setConfigCollapsed] = useState(false);
 
   const remount = useCallback(() => setDemoKey((k) => k + 1), []);
+
+  useEffect(() => {
+    setConfig((current) => resolveConfigForMode(current, mode));
+  }, [mode]);
 
   const antdLocale = useMemo(() => (locale === "zh" ? zhCN : enUS), [locale]);
 
@@ -79,8 +84,7 @@ const App = () => {
 
   const onReset = () => {
     clearDemoConfigOverride();
-    const defaults = getEnvDefaults();
-    setConfig(defaults);
+    setConfig(resolveConfigForMode(getEnvDefaults(), mode));
     remount();
     message.success(t.resetSuccess);
   };

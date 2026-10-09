@@ -14,6 +14,32 @@ const STORAGE_KEY = "dataluminary.share-demo.config";
 export const DEMO_SHARE_UID = "00000000-0000-4000-8000-00000000e101";
 export const DEMO_SHARE_TOKEN = "dl-demo-public-embed-b001-v1";
 
+/** One seeded public share per embed mode, same dashboard. */
+export const DEMO_EMBEDS: Record<EmbedMode, { shareUid: string; token: string }> = {
+  iframe: { shareUid: DEMO_SHARE_UID, token: DEMO_SHARE_TOKEN },
+  "js-sdk": {
+    shareUid: "00000000-0000-4000-8000-00000000e102",
+    token: "dl-demo-public-embed-b001-jssdk",
+  },
+  "micro-app": {
+    shareUid: "00000000-0000-4000-8000-00000000e103",
+    token: "dl-demo-public-embed-b001-micro",
+  },
+  wujie: {
+    shareUid: "00000000-0000-4000-8000-00000000e104",
+    token: "dl-demo-public-embed-b001-wujie",
+  },
+};
+
+const DEMO_SHARE_UIDS = new Set(Object.values(DEMO_EMBEDS).map((item) => item.shareUid));
+
+/** Keep a pasted product share; switch the seeded demo share to match the mode. */
+export function resolveConfigForMode(config: DemoConfig, mode: EmbedMode): DemoConfig {
+  if (config.shareUid && !DEMO_SHARE_UIDS.has(config.shareUid)) return config;
+  const spec = DEMO_EMBEDS[mode];
+  return { ...config, shareUid: spec.shareUid, token: spec.token };
+}
+
 const BROKEN_SDK_CDN =
   "https://cdn.jsdelivr.net/gh/DataLuminary/DataView@sdk-latest/packages/sdk/dist/luminary.min.js";
 
@@ -112,12 +138,32 @@ ${proxyLine}
 </script>`;
     }
     case "micro-app":
+      return `<!-- requires @micro-zoe/micro-app -->
+<script src="https://cdn.jsdelivr.net/npm/@micro-zoe/micro-app@1.0.0-rc.27/lib/index.umd.js"></script>
+<script>
+  var micro = window.microApp && (window.microApp.default || window.microApp);
+  if (micro) micro.start({ iframe: true, "router-mode": "pure" });
+</script>
+<micro-app
+  name="luminary-dashboard"
+  url="${url}"
+  iframe
+  router-mode="pure"
+  style="width:100%;min-height:640px;"
+></micro-app>`;
     case "wujie":
-      return `<iframe
-  src="${url}"
-  style="width:100%;height:100%;min-height:640px;border:1px solid #dce0e6;"
-  allow="fullscreen"
-></iframe>`;
+      return `<!-- requires wujie -->
+<script src="https://cdn.jsdelivr.net/npm/wujie@2.1.0/lib/index.js"></script>
+<div id="luminary-wujie" style="width:100%;min-height:640px;"></div>
+<script>
+  window.wujie.startApp({
+    name: "luminary-dashboard",
+    url: "${url}",
+    el: document.querySelector("#luminary-wujie"),
+    alive: false,
+    degrade: true,
+  });
+</script>`;
     default:
       return `<iframe
   src="${url}"
