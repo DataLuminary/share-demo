@@ -11,9 +11,9 @@ createRoot(root).render(
   <LocaleProvider>
     <HashRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/iframe" replace />} />
-        <Route path="/:mode" element={<App />} />
-        <Route path="*" element={<Navigate to="/iframe" replace />} />
+        <Route path="/" element={<Navigate to="/iframe/growth" replace />} />
+        <Route path="/:mode/:board?" element={<App />} />
+        <Route path="*" element={<Navigate to="/iframe/growth" replace />} />
       </Routes>
     </HashRouter>
   </LocaleProvider>,

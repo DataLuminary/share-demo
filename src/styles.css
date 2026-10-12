@@ -97,8 +97,32 @@ a {
 
 .sd-topbar-actions {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 20px;
   flex-shrink: 0;
+}
+
+.sd-topbar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--brand-muted);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.sd-topbar-link:hover {
+  color: var(--brand-ink);
+}
+
+.sd-topbar-link .anticon {
+  font-size: 15px;
 }
 
 .sd-body {

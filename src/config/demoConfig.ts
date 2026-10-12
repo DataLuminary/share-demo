@@ -31,12 +31,91 @@ export const DEMO_EMBEDS: Record<EmbedMode, { shareUid: string; token: string }>
   },
 };
 
-const DEMO_SHARE_UIDS = new Set(Object.values(DEMO_EMBEDS).map((item) => item.shareUid));
+export function demoShareUid(tail: string): string {
+  return `00000000-0000-4000-8000-00000000${tail}`;
+}
 
-/** Keep a pasted product share; switch the seeded demo share to match the mode. */
+const EXTRA_MODE_TAIL: Record<EmbedMode, string> = {
+  iframe: "e11",
+  "js-sdk": "e12",
+  "micro-app": "e13",
+  wujie: "e14",
+};
+
+const EXTRA_MODE_TOKEN: Record<EmbedMode, string> = {
+  iframe: "iframe",
+  "js-sdk": "jssdk",
+  "micro-app": "micro",
+  wujie: "wujie",
+};
+
+function extraModes(slug: string, slot: string): Record<EmbedMode, { shareUid: string; token: string }> {
+  return {
+    iframe: {
+      shareUid: demoShareUid(`${EXTRA_MODE_TAIL.iframe}${slot}`),
+      token: `dl-demo-public-embed-${slug}-${EXTRA_MODE_TOKEN.iframe}`,
+    },
+    "js-sdk": {
+      shareUid: demoShareUid(`${EXTRA_MODE_TAIL["js-sdk"]}${slot}`),
+      token: `dl-demo-public-embed-${slug}-${EXTRA_MODE_TOKEN["js-sdk"]}`,
+    },
+    "micro-app": {
+      shareUid: demoShareUid(`${EXTRA_MODE_TAIL["micro-app"]}${slot}`),
+      token: `dl-demo-public-embed-${slug}-${EXTRA_MODE_TOKEN["micro-app"]}`,
+    },
+    wujie: {
+      shareUid: demoShareUid(`${EXTRA_MODE_TAIL.wujie}${slot}`),
+      token: `dl-demo-public-embed-${slug}-${EXTRA_MODE_TOKEN.wujie}`,
+    },
+  };
+}
+
+export type ShareLayout = "position" | "grid" | "list";
+
+export interface ShareBoard {
+  id:
+    | "growth"
+    | "campaign"
+    | "ecomAnalysis"
+    | "facility"
+    | "ecomMobile"
+    | "financeMobile"
+    | "opsMobile";
+  layout: ShareLayout;
+  /** One seeded public share per embed mode. */
+  byMode: Record<EmbedMode, { shareUid: string; token: string }>;
+}
+
+/** Public Demo shares seeded by DataTalk. Each board has all four embed modes. */
+export const DEMO_SHARE_BOARDS: readonly ShareBoard[] = [
+  { id: "growth", layout: "position", byMode: DEMO_EMBEDS },
+  { id: "campaign", layout: "position", byMode: extraModes("b011", "1") },
+  { id: "ecomAnalysis", layout: "grid", byMode: extraModes("b021", "2") },
+  { id: "facility", layout: "grid", byMode: extraModes("e821", "3") },
+  { id: "ecomMobile", layout: "list", byMode: extraModes("1101", "4") },
+  { id: "financeMobile", layout: "list", byMode: extraModes("1201", "5") },
+  { id: "opsMobile", layout: "list", byMode: extraModes("1301", "6") },
+];
+
+export function isDemoBoardId(value: string): value is ShareBoard["id"] {
+  return DEMO_SHARE_BOARDS.some((board) => board.id === value);
+}
+
+export function shareForBoard(board: ShareBoard, mode: EmbedMode): { shareUid: string; token: string } {
+  return board.byMode[mode];
+}
+
+export function boardForShareUid(shareUid: string): ShareBoard | undefined {
+  return DEMO_SHARE_BOARDS.find((board) =>
+    Object.values(board.byMode).some((item) => item.shareUid === shareUid),
+  );
+}
+
+/** Keep a pasted product share. Seeded demo shares follow the selected embed mode. */
 export function resolveConfigForMode(config: DemoConfig, mode: EmbedMode): DemoConfig {
-  if (config.shareUid && !DEMO_SHARE_UIDS.has(config.shareUid)) return config;
-  const spec = DEMO_EMBEDS[mode];
+  const board = config.shareUid ? boardForShareUid(config.shareUid) : undefined;
+  if (!board) return config;
+  const spec = shareForBoard(board, mode);
   return { ...config, shareUid: spec.shareUid, token: spec.token };
 }
 
