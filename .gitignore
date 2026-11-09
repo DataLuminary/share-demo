@@ -7,3 +7,6 @@ dist/
 .DS_Store
 .idea/
 .vscode/
+
+# Local AI provider secrets — never commit
+.env.ai
